@@ -127,4 +127,10 @@ endfunction()
 
 if(PROJECT_LOG_ENABLE_TESTS)
   add_subdirectory(tests)
+
+  project_log(STATUS "Configuration complete.")
+  project_log(WARNING "A deprecated feature is being used.")
+  project_log(DEBUG "Variable X has value:" ${X})
+  project_log(VERBOSE "Detailed steps for process Y...")
+  project_log(FATAL_ERROR "Cannot find required resource. Aborting.")
 endif()

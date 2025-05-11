@@ -19,8 +19,8 @@ include(FetchContent)
 
 FetchContent_Declare(
   project_log
-  GIT_REPOSITORY https://your.git.repository/path/to/project_log.git 
-  GIT_TAG 1.0.0  # Master                                              
+  GIT_REPOSITORY https://github.com/jkammerland/project_log.cmake.git
+  GIT_TAG v1.0.0  # or branch/commit                                              
 )
 
 # To enable colors, set this *before* FetchContent_MakeAvailable
@@ -47,27 +47,22 @@ project_log(DEBUG "Variable X has value:" ${X})
 project_log(VERBOSE "Detailed steps for process Y...")
 project_log(FATAL_ERROR "Cannot find required resource. Aborting.")
 ```
-
-**Example Output (without colors, `PROJECT_LOG_COLORS` is `OFF`):**
+**Example Output
 ```
-[MyAwesomeApp[STATUS] Configuration complete.
+[MyAwesomeApp][STATUS] Configuration complete.
 [MyAwesomeApp][WARNING] A deprecated feature is being used.
-[MyAwesomeApp][DEBUG Variable X has value: some_value
+[MyAwesomeApp][DEBUG] Variable X has value: some_value
 [MyAwesomeApp][VERBOSE] Detailed steps for process Y...
--- Configuring incomplete, errors occurred!
-CMake Error at CMakeLists.txt:XX (project_log):
-  [MyAwesomeApp][FATAL_ERROR] Cannot find required resource. Aborting.
-```
+CMake Warning at tests/new_version/CMakeLists.txt:122 (message):
+  [MyAwesomeApp][WARNING] A deprecated feature is being used.
+Call Stack (most recent call first):
+  CMakeLists.txt:132 (project_log)
 
-**Example Output (with colors, `PROJECT_LOG_COLORS` is `ON` and terminal supports ANSI):**
-```
-[MyAwesomeApp][<green_bold>STATUS<reset>] Configuration complete.
-[MyAwesomeApp][<yellow>WARNING<reset>] A deprecated feature is being used.
-[MyAwesomeApp][<blue_bold>DEBUG<reset>] Variable X has value: some_value
-[MyAwesomeApp][<green>VERBOSE<reset>] Detailed steps for process Y...
--- Configuring incomplete, errors occurred!
-CMake Error at CMakeLists.txt:XX (project_log):
-  [MyAwesomeApp][<white_on_red_bg>FATAL_ERROR<reset>] Cannot find required resource. Aborting.
+
+CMake Error at tests/new_version/CMakeLists.txt:122 (message):
+  [MyAwesomeApp][FATAL_ERROR] Cannot find required resource.  Aborting.
+Call Stack (most recent call first):
+  CMakeLists.txt:135 (project_log)
 ```
 
 ### Enabling/Disabling Colors
@@ -77,13 +72,11 @@ Colors are **OFF** by default. To enable them, set the `PROJECT_LOG_COLORS` CMak
 You can set this option:
 1.  When invoking CMake:
     ```bash
-    cmake -DPROJECT_LOG_COLORS=ON ..
+    cmake -DPROJECT_LOG_COLORS=ON --log-level=TRACE .. # or any other log-level
     ```
 2.  In your `CMakeLists.txt` (before fetching/including `project_log`):
     ```cmake
-    set(PROJECT_LOG_COLORS ON CACHE BOOL "Enable log colors for project_log" FORCE)
-    # or
-    # option(PROJECT_LOG_COLORS "Enable log colors for project_log" ON)
+    set(PROJECT_LOG_COLORS ON)
     ```
 
 ## Log Levels
