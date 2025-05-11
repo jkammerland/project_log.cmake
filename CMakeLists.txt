@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(project_log VERSION 1.0.0)
+project(project_log VERSION 1.0.1)
 
 # Option to enable/disable colors
 option(PROJECT_LOG_COLORS "Enables colors for STATUS/DEBUG etc" OFF)
@@ -22,8 +22,6 @@ if(DEFINED PROJECT_LOG_INCLUDED)
       message(STATUS "Will not override to older version ${PROJECT_VERSION}. This function is backwards compatible up to new major versions.")
       return()
     endif()
-  else()
-
   endif()
 else()
   # Mark as included with current version
@@ -116,7 +114,7 @@ function(project_log level)
     endif()
 
     # Construct the full message with project name and colored level
-    set(full_msg "[${_log_context_name}[${level_color}${level}${COLOR_RESET}]${msg}")
+    set(full_msg "[${_log_context_name}][${level_color}${level}${COLOR_RESET}]${msg}")
   else()
     set(full_msg "[${_log_context_name}][${level}]${msg}")
   endif()

@@ -20,13 +20,18 @@ include(FetchContent)
 FetchContent_Declare(
   project_log
   GIT_REPOSITORY https://github.com/jkammerland/project_log.cmake.git
-  GIT_TAG v1.0.0  # or branch/commit                                              
+  GIT_TAG v1.0.1  # or branch/commit                                              
 )
 
 # To enable colors, set this *before* FetchContent_MakeAvailable
 # option(PROJECT_LOG_COLORS "Enable log colors" ON) # Or set via cmake -DPROJECT_LOG_COLORS=ON
 
 FetchContent_MakeAvailable(project_log)
+# The project_log function is now available.
+```
+or cpmaddpackage
+```cmake
+cpmaddpackage("gh:jkammerland/project_log.cmake@1.0.1")
 # The project_log function is now available.
 ```
 
