@@ -85,18 +85,17 @@ function(project_log level)
     set(COLOR_ERROR "")
     set(COLOR_FATAL_ERROR "")
   else()
-    set(ESC "${_PROJECT_LOG_ESC_CHAR}") # Use pre-defined escape character
-    set(COLOR_RESET "${ESC}[0m")
-    set(COLOR_STATUS "${ESC}[0;32m") # green
-    set(COLOR_VERBOSE "${ESC}[1;32m") # bold green
-    set(COLOR_DEBUG "${ESC}[1;34m") # bold blue
-    set(COLOR_TRACE "${ESC}[0;36m") # cyan
-    set(COLOR_WARNING "${ESC}[1;33m") # bold yellow
-    set(COLOR_AUTHOR_WARNING "${ESC}[0;33m") # yellow
-    set(COLOR_DEPRECATION "${ESC}[1;35m") # bold magenta
-    set(COLOR_NOTICE "${ESC}[0;37m") # light gray
-    set(COLOR_ERROR "${ESC}[1;31m") # bold red
-    set(COLOR_FATAL_ERROR "${ESC}[1;41;37m") # white on red background
+    set(COLOR_RESET "${_PROJECT_LOG_ESC_CHAR}[0m")
+    set(COLOR_STATUS "${_PROJECT_LOG_ESC_CHAR}[0;32m") # green
+    set(COLOR_VERBOSE "${_PROJECT_LOG_ESC_CHAR}[1;32m") # bold green
+    set(COLOR_DEBUG "${_PROJECT_LOG_ESC_CHAR}[1;34m") # bold blue
+    set(COLOR_TRACE "${_PROJECT_LOG_ESC_CHAR}[0;36m") # cyan
+    set(COLOR_WARNING "${_PROJECT_LOG_ESC_CHAR}[1;33m") # bold yellow
+    set(COLOR_AUTHOR_WARNING "${_PROJECT_LOG_ESC_CHAR}[0;33m") # yellow
+    set(COLOR_DEPRECATION "${_PROJECT_LOG_ESC_CHAR}[1;35m") # bold magenta
+    set(COLOR_NOTICE "${_PROJECT_LOG_ESC_CHAR}[0;37m") # light gray
+    set(COLOR_ERROR "${_PROJECT_LOG_ESC_CHAR}[1;31m") # bold red
+    set(COLOR_FATAL_ERROR "${_PROJECT_LOG_ESC_CHAR}[1;41;37m") # white on red background
   endif()
 
   if(PROJECT_LOG_COLORS)
