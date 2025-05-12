@@ -1,14 +1,13 @@
 # Project Log CMake Module
 
-A simple CMake module to enhance logging within your CMake scripts. It provides a `project_log` function that prefixes messages with the current project name and log level, and optionally adds color to the output for better readability.
+A simple CMake module to enhance logging within your CMake scripts. It provides a `project_log` function that prefixes messages with the current project name and log level, and optionally adds color to the output for better readability. This aims to solve the problem where you don't know where the log came from when a function can be invoked from multiple places.
 
 ## Features
 
 *   **Standardized Logging**: Prepends `[PROJECT_NAME][LEVEL]` to all log messages.
-*   **Standard CMake Levels**: Supports all standard CMake message levels (`FATAL_ERROR`, `SEND_ERROR`, `WARNING`, `AUTHOR_WARNING`, `DEPRECATION`, `NOTICE`, `STATUS`, `VERBOSE`, `DEBUG`, `TRACE`).
+*   **Standard CMake Levels**: Supports all standard CMake message levels (`FATAL_ERROR`, `SEND_ERROR`, `WARNING`, `AUTHOR_WARNING`, `DEPRECATION`, `NOTICE`, `STATUS`, `VERBOSE`, `DEBUG`, `TRACE`). They work in the same way as message(Level ...)
 *   **Color-Coded Output**: Optionally uses ANSI colors for different log levels (can be toggled with the `PROJECT_LOG_COLORS` option).
-*   **Version Tracking**: Includes its own version and warns if different versions of the module are included within the same CMake build.
-*   **Load Indication**: Logs a message when it's first included, showing its version.
+*   **Version Tracking**: Warns if different versions of the module are included within the same CMake build.
 
 ## Integration with FetchContent
 
@@ -20,7 +19,7 @@ include(FetchContent)
 FetchContent_Declare(
   project_log
   GIT_REPOSITORY https://github.com/jkammerland/project_log.cmake.git
-  GIT_TAG v1.0.1  # or branch/commit                                              
+  GIT_TAG v1.0.2  # or branch/commit                                              
 )
 
 # To enable colors, set this *before* FetchContent_MakeAvailable
@@ -31,7 +30,7 @@ FetchContent_MakeAvailable(project_log)
 ```
 or cpmaddpackage
 ```cmake
-cpmaddpackage("gh:jkammerland/project_log.cmake@1.0.1")
+cpmaddpackage("gh:jkammerland/project_log.cmake@1.0.2")
 # The project_log function is now available.
 ```
 
@@ -52,7 +51,8 @@ project_log(DEBUG "Variable X has value:" ${X})
 project_log(VERBOSE "Detailed steps for process Y...")
 project_log(FATAL_ERROR "Cannot find required resource. Aborting.")
 ```
-**Example Output
+
+### Example Output
 ```
 [MyAwesomeApp][STATUS] Configuration complete.
 [MyAwesomeApp][WARNING] A deprecated feature is being used.
