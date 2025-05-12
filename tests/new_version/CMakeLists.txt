@@ -33,9 +33,6 @@ endif()
 
 set_property(GLOBAL PROPERTY PROJECT_LOG_INITIALIZED true)
 
-# Define ANSI escape character once
-string(ASCII 27 _PROJECT_LOG_ESC_CHAR)
-
 # ~~~
 # project_log(Level Arg1 Arg2 ...)
 #
@@ -85,6 +82,7 @@ function(project_log level)
     set(COLOR_ERROR "")
     set(COLOR_FATAL_ERROR "")
   else()
+    string(ASCII 27 _PROJECT_LOG_ESC_CHAR)
     set(COLOR_RESET "${_PROJECT_LOG_ESC_CHAR}[0m")
     set(COLOR_STATUS "${_PROJECT_LOG_ESC_CHAR}[0;32m") # green
     set(COLOR_VERBOSE "${_PROJECT_LOG_ESC_CHAR}[1;32m") # bold green

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(project_log VERSION 1.0.3)
+project(project_log VERSION 1.0.4)
 
 # Option to enable/disable colors
 option(PROJECT_LOG_COLORS "Enables colors for STATUS/DEBUG etc" OFF)
