@@ -1,26 +1,25 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(project_log VERSION 1.1.0)
+project(project_log VERSION 1.19.2)
 
 # Option to enable/disable colors
 option(PROJECT_LOG_COLORS "Enables colors for STATUS/DEBUG etc" OFF)
 
 # Version checking without preventing inclusion
 if(DEFINED PROJECT_LOG_INCLUDED)
-  # If already included, check version
-  if(NOT ${PROJECT_VERSION} VERSION_EQUAL PROJECT_LOG_INCLUDED)
-    message(WARNING "project_log module version mismatch: included version ${PROJECT_LOG_INCLUDED}, current version ${PROJECT_VERSION}.")
-    if(${PROJECT_VERSION} VERSION_GREATER PROJECT_LOG_INCLUDED)
-      message(NOTICE "Must override version to ${PROJECT_VERSION}. Might not be forwards compatible.")
-      set(PROJECT_LOG_INCLUDED
-          ${PROJECT_VERSION}
-          CACHE INTERNAL "Version of the included project_log module")
-    else()
-      message(NOTICE "Will not override to older version ${PROJECT_VERSION}. This function is backwards compatible up to new major versions.")
-      return()
-    endif()
-  else()
+  # check version
+  if(${PROJECT_VERSION} VERSION_GREATER PROJECT_LOG_INCLUDED)
+    message(WARNING "[${PROJECT_NAME}][WARNING] Included ${PROJECT_NAME} [${PROJECT_VERSION}]. Current version is older [${PROJECT_LOG_INCLUDED}]. You may need to update if not forwards compatible.")
+  elseif(${PROJECT_VERSION} VERSION_LESS PROJECT_LOG_INCLUDED)
+    message(TRACE "[${PROJECT_NAME}][TRACE] Included ${PROJECT_NAME} [${PROJECT_VERSION}]. Current version is newer [${PROJECT_LOG_INCLUDED}]")
+  endif()
 
+  get_property(
+    PROJECT_LOG_INITIALIZED GLOBAL ""
+    PROPERTY PROJECT_LOG_INITIALIZED
+    SET)
+  if(PROJECT_LOG_INITIALIZED)
+    return()
   endif()
 else()
   # Mark as included with current version
@@ -28,15 +27,11 @@ else()
       ${PROJECT_VERSION}
       CACHE INTERNAL "Version of the included project_log module")
 
-  # Only log the first time it's included
-  if(PROJECT_NAME)
-    set(_project_log_context_name "${PROJECT_NAME}")
-  else()
-    set(_project_log_context_name "CMake") # Default if project() not yet called
-  endif()
-  # Use basic message since project_log is not yet defined
-  message(VERBOSE "[${_project_log_context_name}] Loaded project_log module v${PROJECT_VERSION}")
+  # Only log VERBOSE the first time it's included
+  message(VERBOSE "[${PROJECT_NAME}][VERBOSE] Loaded module project_log [${PROJECT_VERSION}]")
 endif()
+
+set_property(GLOBAL PROPERTY PROJECT_LOG_INITIALIZED true)
 
 # Define ANSI escape character once
 string(ASCII 27 _PROJECT_LOG_ESC_CHAR)
@@ -113,7 +108,7 @@ function(project_log level)
     endif()
 
     # Construct the full message with project name and colored level
-    set(full_msg "[${_log_context_name}[${level_color}${level}${COLOR_RESET}]${msg}")
+    set(full_msg "[${_log_context_name}][${level_color}${level}${COLOR_RESET}]${msg}")
   else()
     set(full_msg "[${_log_context_name}][${level}]${msg}")
   endif()
@@ -121,3 +116,15 @@ function(project_log level)
   # Forward the message with the specified log level
   message(${level} "${full_msg}")
 endfunction()
+
+# TESTS - Include guard, this must be root dir
+if(NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_LIST_DIR})
+  return()
+else()
+  add_subdirectory(tests)
+  project_log(STATUS "Configuration complete.")
+  project_log(WARNING "A deprecated feature is being used.")
+  project_log(DEBUG "Variable X has value:" ${X})
+  project_log(VERBOSE "Detailed steps for process Y...")
+  # project_log(FATAL_ERROR "Cannot find required resource. Aborting.")
+endif()
