@@ -1,40 +1,27 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(project_log VERSION 1.0.4)
+project(project_log VERSION 1.0.5)
 
 # Option to enable/disable colors
 option(PROJECT_LOG_COLORS "Enables colors for STATUS/DEBUG etc" OFF)
 
-# Version checking without preventing inclusion
-if(DEFINED PROJECT_LOG_INCLUDED)
-  # check version
-  if(${PROJECT_VERSION} VERSION_GREATER PROJECT_LOG_INCLUDED)
-    message(WARNING "[${PROJECT_NAME}][WARNING] Included ${PROJECT_NAME} [${PROJECT_VERSION}]. Current version is older [${PROJECT_LOG_INCLUDED}]. You may need to update if not forwards compatible.")
-  elseif(${PROJECT_VERSION} VERSION_LESS PROJECT_LOG_INCLUDED)
-    message(TRACE "[${PROJECT_NAME}][TRACE] Included ${PROJECT_NAME} [${PROJECT_VERSION}]. Current version is newer [${PROJECT_LOG_INCLUDED}]")
-  endif()
-
-  get_property(
-    PROJECT_LOG_INITIALIZED GLOBAL ""
-    PROPERTY PROJECT_LOG_INITIALIZED
-    SET)
-  if(PROJECT_LOG_INITIALIZED)
-    return()
-  endif()
+set(PROJECT_INCLUDE_GUARD_VERSION "1.0.2")
+get_property(
+  CPM_INITIALIZED GLOBAL
+  PROPERTY CPM_INITIALIZED
+  SET)
+if(CPM_INITIALIZED)
+  cpmaddpackage("gh:jkammerland/project_include_guard.cmake@${PROJECT_INCLUDE_GUARD_VERSION}")
 else()
-  # Mark as included with current version
-  set(PROJECT_LOG_INCLUDED
-      ${PROJECT_VERSION}
-      CACHE INTERNAL "Version of the included project_log module")
-
-  # Only log VERBOSE the first time it's included
-  message(VERBOSE "[${PROJECT_NAME}][VERBOSE] Loaded module project_log [${PROJECT_VERSION}]")
-endif()
-
-set_property(GLOBAL PROPERTY PROJECT_LOG_INITIALIZED true)
-
-# Define ANSI escape character once
-string(ASCII 27 _PROJECT_LOG_ESC_CHAR)
+  include(FetchContent)
+  FetchContent_Declare(
+    project_include_guard
+    GIT_REPOSITORY https://github.com/jkammerland/project_include_guard.cmake.git
+    GIT_TAG "v${PROJECT_INCLUDE_GUARD_VERSION}" # or branch/commit
+  )
+  FetchContent_MakeAvailable(project_include_guard)
+endif(CPM_INITIALIZED)
+project_include_guard()
 
 # ~~~
 # project_log(Level Arg1 Arg2 ...)
@@ -85,17 +72,37 @@ function(project_log level)
     set(COLOR_ERROR "")
     set(COLOR_FATAL_ERROR "")
   else()
-    set(COLOR_RESET "${_PROJECT_LOG_ESC_CHAR}[0m")
-    set(COLOR_STATUS "${_PROJECT_LOG_ESC_CHAR}[0;32m") # green
-    set(COLOR_VERBOSE "${_PROJECT_LOG_ESC_CHAR}[1;32m") # bold green
-    set(COLOR_DEBUG "${_PROJECT_LOG_ESC_CHAR}[1;34m") # bold blue
-    set(COLOR_TRACE "${_PROJECT_LOG_ESC_CHAR}[0;36m") # cyan
-    set(COLOR_WARNING "${_PROJECT_LOG_ESC_CHAR}[1;33m") # bold yellow
-    set(COLOR_AUTHOR_WARNING "${_PROJECT_LOG_ESC_CHAR}[0;33m") # yellow
-    set(COLOR_DEPRECATION "${_PROJECT_LOG_ESC_CHAR}[1;35m") # bold magenta
-    set(COLOR_NOTICE "${_PROJECT_LOG_ESC_CHAR}[0;37m") # light gray
-    set(COLOR_ERROR "${_PROJECT_LOG_ESC_CHAR}[1;31m") # bold red
-    set(COLOR_FATAL_ERROR "${_PROJECT_LOG_ESC_CHAR}[1;41;37m") # white on red background
+    # Define ANSI color codes for different log levels (using CMake-compatible escapes)
+    string(ASCII 27 Esc)
+    set(ColourReset "${Esc}[m")
+    set(ColourBold "${Esc}[1m")
+    set(Red "${Esc}[31m")
+    set(Green "${Esc}[32m")
+    set(Yellow "${Esc}[33m")
+    set(Blue "${Esc}[34m")
+    set(Magenta "${Esc}[35m")
+    set(Cyan "${Esc}[36m")
+    set(White "${Esc}[37m")
+    set(BoldRed "${Esc}[1;31m")
+    set(BoldGreen "${Esc}[1;32m")
+    set(BoldYellow "${Esc}[1;33m")
+    set(BoldBlue "${Esc}[1;34m")
+    set(BoldMagenta "${Esc}[1;35m")
+    set(BoldCyan "${Esc}[1;36m")
+    set(BoldWhite "${Esc}[1;37m")
+
+    # Map the new color variables to the COLOR_* variables used in the existing code
+    set(COLOR_RESET "${ColourReset}")
+    set(COLOR_STATUS "${Green}") # green
+    set(COLOR_VERBOSE "${BoldGreen}") # bold green
+    set(COLOR_DEBUG "${BoldBlue}") # bold blue
+    set(COLOR_TRACE "${Cyan}") # cyan
+    set(COLOR_WARNING "${BoldYellow}") # bold yellow
+    set(COLOR_AUTHOR_WARNING "${Yellow}") # yellow
+    set(COLOR_DEPRECATION "${BoldMagenta}") # bold magenta
+    set(COLOR_NOTICE "${White}") # light gray
+    set(COLOR_ERROR "${BoldRed}") # bold red
+    set(COLOR_FATAL_ERROR "${Esc}[1;41;37m") # white on red background (keeping original as no direct equivalent)
   endif()
 
   if(PROJECT_LOG_COLORS)
